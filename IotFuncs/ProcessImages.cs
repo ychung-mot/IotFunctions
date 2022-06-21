@@ -17,7 +17,7 @@ namespace IotFuncs
         [FunctionName("ResizeAndAddWatermark")]
         public static async Task Run(
             [BlobTrigger("images-src/{name}")] BlobClient srcClient,
-            [Blob("images-dest/{name}", FileAccess.Write)] Stream destination,
+            [Blob("images/{name}", FileAccess.Write)] Stream destination,
             string name,
             ILogger log)
         {
