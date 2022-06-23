@@ -2,7 +2,6 @@ using IotApis.Model;
 using IotApis.Service;
 using IotCommon;
 using Microsoft.AspNetCore.Mvc;
-using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace IotApis.Controllers

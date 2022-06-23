@@ -266,3 +266,4 @@ __pycache__/
 PublishProfiles/
 ServiceDependencies/
 *Deploy.json
+launchSettings.json
