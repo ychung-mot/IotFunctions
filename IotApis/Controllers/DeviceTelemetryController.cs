@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 namespace IotApis.Controllers
 {
     [ApiController]
-    [Route("api/weather/device")]
+    [Route("api/weather/devicetelemetry")]
     public class DeviceTelemetryController : ControllerBase
     {
         private readonly IDeviceTelemetryService _deviceTelemetryService;
