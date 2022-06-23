@@ -19,8 +19,8 @@ namespace IotApis.Controllers
             _logger = logger;
         }
 
-        [HttpGet("{id}/{dateFrom}/{dateTo}", Name = "GetDeviceTelemetries")]
-        public async Task<ActionResult<IEnumerable<DeviceTelemetry>>> GetDeviceTelemetries(string id, string dateFrom, string dateTo)
+        [HttpGet("{deviceId}/{dateFrom}/{dateTo}", Name = "GetDeviceTelemetries")]
+        public async Task<ActionResult<IEnumerable<DeviceTelemetry>>> GetDeviceTelemetries(string deviceId, string dateFrom, string dateTo)
         {
             if (!ValidateDate(dateFrom) || !ValidateDate(dateTo))
                 return BadRequest();
@@ -28,7 +28,7 @@ namespace IotApis.Controllers
             var dateFromTs = DateUtils.ConvertPacificToUtcTotalSeconds(DateTime.Parse(dateFrom));
             var dateToTs = DateUtils.ConvertPacificToUtcTotalSeconds(DateTime.Parse(dateTo).AddDays(1).AddSeconds(-1));
 
-            return await _deviceTelemetryService.GetDeviceTelemetries(id, dateFromTs, dateToTs);
+            return await _deviceTelemetryService.GetDeviceTelemetries(deviceId, dateFromTs, dateToTs);
         }
 
         private bool ValidateDate(string dateStr)

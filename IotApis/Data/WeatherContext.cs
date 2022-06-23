@@ -21,7 +21,7 @@ namespace IotApis.Data
                 .HasNoDiscriminator()
                 .ToContainer(Constants.WeatherDataContainer)
                 .HasPartitionKey(x => x.deviceId)
-                .HasKey(x => x.deviceId);;
+                .HasKey(x => x.id);
         }
     }
 }
