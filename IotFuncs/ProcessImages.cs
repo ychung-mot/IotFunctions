@@ -2,6 +2,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using IotCommon;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using SixLabors.Fonts;

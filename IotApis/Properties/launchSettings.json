@@ -1,0 +1,32 @@
+﻿{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:6611",
+      "sslPort": 44308
+    }
+  },
+  "profiles": {
+    "IotApis": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:7025;http://localhost:5025",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ConnectionStrings__Weather": "AccountEndpoint=https://iot-poc-cosmos-weather-test.documents.azure.com:443/;AccountKey=9wcvy4x39FBburnG4HfxJNFjjmFMfR1hwv09FV9FCTHLLdFtzUTSbkpEK3Lc9z1ACtMCkZ7OJ0zjDIzKHEH0xA=="
+      }
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace IotFuncs
+namespace IotCommon
 {
     public static class DateUtils
     {
@@ -81,6 +81,14 @@ namespace IotFuncs
 
             return (utcDateFrom, utcDateTo);
         }
+
+        public static long ConvertPacificToUtcTotalSeconds(DateTime pstDate)
+        {
+            var date = ConvertPacificToUtcTime(pstDate);
+
+            return (long)date.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
+        }
+
     }
 
 }
