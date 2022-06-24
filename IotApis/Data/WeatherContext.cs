@@ -15,9 +15,6 @@ namespace IotApis.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<DeviceTelemetry>()
-                .Property(x => x.timestamp).ToJsonProperty("_ts");                
-
-            modelBuilder.Entity<DeviceTelemetry>()
                 .HasNoDiscriminator()
                 .ToContainer(Constants.WeatherDataContainer)
                 .HasPartitionKey(x => x.deviceId)

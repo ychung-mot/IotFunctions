@@ -25,8 +25,8 @@ namespace IotApis.Controllers
             if (!ValidateDate(dateFrom) || !ValidateDate(dateTo))
                 return BadRequest();
 
-            var dateFromTs = DateUtils.ConvertPacificToUtcTotalSeconds(DateTime.Parse(dateFrom));
-            var dateToTs = DateUtils.ConvertPacificToUtcTotalSeconds(DateTime.Parse(dateTo).AddDays(1).AddSeconds(-1));
+            var dateFromTs = DateUtils.ConvertPacificToUtcTotalMilliseconds(DateTime.Parse(dateFrom));
+            var dateToTs = DateUtils.ConvertPacificToUtcTotalMilliseconds(DateTime.Parse(dateTo).AddDays(1).AddSeconds(-1));
 
             return await _deviceTelemetryService.GetDeviceTelemetries(deviceId, dateFromTs, dateToTs);
         }

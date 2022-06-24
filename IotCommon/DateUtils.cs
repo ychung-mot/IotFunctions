@@ -82,11 +82,11 @@ namespace IotCommon
             return (utcDateFrom, utcDateTo);
         }
 
-        public static long ConvertPacificToUtcTotalSeconds(DateTime pstDate)
+        public static long ConvertPacificToUtcTotalMilliseconds(DateTime pstDate)
         {
             var date = ConvertPacificToUtcTime(pstDate);
 
-            return (long)date.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
+            return (long)date.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
         }
 
     }
