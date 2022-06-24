@@ -1,5 +1,6 @@
 ﻿using IotApis.Data;
 using IotApis.Model;
+using IotCommon;
 using Microsoft.EntityFrameworkCore;
 
 namespace IotApis.Service
@@ -24,6 +25,12 @@ namespace IotApis.Service
             var telemetries = await dbContext.DeviceTelemetry
                 .Where(x => x.deviceId == deviceId && x.timestamp >= dateFrom && x.timestamp <= dateTo)
                 .ToListAsync();
+
+            //convert measurement timestamp from UTC to PST
+            foreach(var telemetry in telemetries)
+            {
+                telemetry.measurements["timestamp"] = DateUtils.ConvertUtcTotalMillisecondsToPst(telemetry.timestamp).ToString("yyyy-MM-dd hh:mm:ss");
+            }
 
             return telemetries;
         }
