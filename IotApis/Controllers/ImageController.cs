@@ -51,7 +51,7 @@ namespace IotApis.Controllers
                 return (false, "", "");
             }
 
-            return (true, uri.Segments[1], uri.LocalPath.Replace(uri.Segments[1], ""));
+            return (true, uri.Segments[1], uri.LocalPath[uri.Segments[1].Length..]);
         }
     }
 }
