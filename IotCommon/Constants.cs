@@ -12,6 +12,8 @@
         public const string CameraDB = "CameraDB";
         public const string CameraDataContainer = "CameraDataContainer";
         public const string CameraDBConnString = "Camera";
+
+        public const string BlobConnString = "Blob";
     }
 
     public enum Position
