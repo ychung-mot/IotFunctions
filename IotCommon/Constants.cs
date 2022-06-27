@@ -8,6 +8,10 @@
         public const string WeatherDB = "WeatherDB";
         public const string WeatherDataContainer = "WeatherDataContainer";
         public const string WeatherDBConnString = "Weather";
+
+        public const string CameraDB = "CameraDB";
+        public const string CameraDataContainer = "CameraDataContainer";
+        public const string CameraDBConnString = "Camera";
     }
 
     public enum Position

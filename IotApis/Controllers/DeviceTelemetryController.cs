@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 namespace IotApis.Controllers
 {
     [ApiController]
-    [Route("api/weather/device")]
+    [Route("api/weather/devices")]
     public class DeviceTelemetryController : ControllerBase
     {
         private readonly IDeviceTelemetryService _deviceTelemetryService;
@@ -19,7 +19,7 @@ namespace IotApis.Controllers
             _logger = logger;
         }
 
-        [HttpGet("{deviceId}/telemetry", Name = "GetDeviceTelemetries")]
+        [HttpGet("{deviceId}/telemetries", Name = "GetDeviceTelemetries")]
         public async Task<ActionResult<IEnumerable<DeviceTelemetry>>> GetDeviceTelemetries(string deviceId, string dateFrom, string dateTo)
         {
             if (!ValidateDate(dateFrom) || !ValidateDate(dateTo))
@@ -36,8 +36,6 @@ namespace IotApis.Controllers
             var regex = new Regex(@"\d\d\d\d-\d\d-\d\d");
 
             return regex.Match(dateStr).Success;
-        }     
-
-
+        }
     }
 }

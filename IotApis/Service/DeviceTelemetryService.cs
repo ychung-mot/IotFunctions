@@ -23,6 +23,7 @@ namespace IotApis.Service
             using var dbContext = await _contextFactory.CreateDbContextAsync();
 
             var telemetries = await dbContext.DeviceTelemetry
+                .AsNoTracking()
                 .Where(x => x.deviceId == deviceId && x.timestamp >= dateFrom && x.timestamp <= dateTo)
                 .ToListAsync();
 

@@ -21,7 +21,19 @@ builder.Services.AddDbContextFactory<WeatherContext>(optionsBuilder =>
           options.ConnectionMode(ConnectionMode.Direct);
       }));
 
+var cameraConnString = builder.Configuration.GetConnectionString(Constants.CameraDBConnString);
+builder.Services.AddDbContextFactory<CameraContext>(optionsBuilder =>
+  optionsBuilder
+    .UseCosmos(
+      connectionString: cameraConnString,
+      databaseName: Constants.CameraDB,
+      cosmosOptionsAction: options =>
+      {
+          options.ConnectionMode(ConnectionMode.Direct);
+      }));
+
 builder.Services.AddScoped<IDeviceTelemetryService, DeviceTelemetryService>();
+builder.Services.AddScoped<IDeviceImageService, DeviceImageService>();
 
 var app = builder.Build();
 
