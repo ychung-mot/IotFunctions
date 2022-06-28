@@ -22,11 +22,11 @@ namespace IotApis.Controllers
 
             var client = new BlobServiceClient(connString);
 
-            var parsed = ParseImagePath(imagePath);
-            if (!parsed.valid) return BadRequest();
+            var (validPath, containerName, blobName) = ParseImagePath(imagePath);
+            if (!validPath) return BadRequest();
 
-            var container = client.GetBlobContainerClient(parsed.containerName);
-            var blobClient = container.GetBlobClient(parsed.blobName);
+            var container = client.GetBlobContainerClient(containerName);
+            var blobClient = container.GetBlobClient(blobName);
 
             if (!blobClient.Exists())
                 return NotFound();
@@ -38,7 +38,7 @@ namespace IotApis.Controllers
             return File(stream, "image/jpeg");
         }
 
-        private (bool valid, string containerName, string blobName) ParseImagePath(string imagePath)
+        private (bool validPath, string containerName, string blobName) ParseImagePath(string imagePath)
         {
             Uri uri;
 
