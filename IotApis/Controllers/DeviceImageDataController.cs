@@ -8,19 +8,19 @@ namespace IotApis.Controllers
 {
     [ApiController]
     [Route("api/camera/devices")]
-    public class DeviceImageController : ControllerBase
+    public class DeviceImageDataController : ControllerBase
     {
-        private readonly IDeviceImageService _deviceImageService;
-        private readonly ILogger<DeviceImageController> _logger;
+        private readonly IDeviceImageDataService _deviceImageService;
+        private readonly ILogger<DeviceImageDataController> _logger;
 
-        public DeviceImageController(IDeviceImageService deviceImageService, ILogger<DeviceImageController> logger)
+        public DeviceImageDataController(IDeviceImageDataService deviceImageService, ILogger<DeviceImageDataController> logger)
         {
             _deviceImageService = deviceImageService;
             _logger = logger;
         }
 
-        [HttpGet("{deviceId}/images", Name = "GetDeviceImages")]
-        public async Task<ActionResult<IEnumerable<DeviceImage>>> GetDeviceImages(string deviceId, string dateFrom, string dateTo, string? preset)
+        [HttpGet("{deviceId}/imagedata", Name = "GetDeviceImageData")]
+        public async Task<ActionResult<IEnumerable<DeviceImage>>> GetDeviceImageData(string deviceId, string dateFrom, string dateTo, string? preset)
         {
             if (!ValidateDate(dateFrom) || !ValidateDate(dateTo))
                 return BadRequest();
@@ -28,7 +28,7 @@ namespace IotApis.Controllers
             var dateFromTs = DateUtils.ConvertPacificToUtcTotalMilliseconds(DateTime.Parse(dateFrom));
             var dateToTs = DateUtils.ConvertPacificToUtcTotalMilliseconds(DateTime.Parse(dateTo).AddDays(1).AddSeconds(-1));
 
-            return await _deviceImageService.GetDeviceImages(deviceId, dateFromTs, dateToTs, preset);
+            return await _deviceImageService.GetDeviceImageData(deviceId, dateFromTs, dateToTs, preset);
         }
 
         private bool ValidateDate(string dateStr)

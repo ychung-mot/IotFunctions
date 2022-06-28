@@ -5,19 +5,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IotApis.Service
 {
-    public interface IDeviceImageService
+    public interface IDeviceImageDataService
     {
-        Task<List<DeviceImage>> GetDeviceImages(string deviceId, long dateFrom, long dateTo, string? preset);
+        Task<List<DeviceImage>> GetDeviceImageData(string deviceId, long dateFrom, long dateTo, string? preset);
     }
-    public class DeviceImageService : IDeviceImageService
+    public class DeviceImageDataService : IDeviceImageDataService
     {
         private IDbContextFactory<CameraContext> _contextFactory;
 
-        public DeviceImageService(IDbContextFactory<CameraContext> contextFactory)
+        public DeviceImageDataService(IDbContextFactory<CameraContext> contextFactory)
         {
             _contextFactory = contextFactory;
         }
-        public async Task<List<DeviceImage>> GetDeviceImages(string deviceId, long dateFrom, long dateTo, string? preset)
+        public async Task<List<DeviceImage>> GetDeviceImageData(string deviceId, long dateFrom, long dateTo, string? preset)
         {
             using var dbContext = await _contextFactory.CreateDbContextAsync();
 

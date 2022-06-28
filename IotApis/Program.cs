@@ -33,7 +33,7 @@ builder.Services.AddDbContextFactory<CameraContext>(optionsBuilder =>
       }));
 
 builder.Services.AddScoped<IDeviceTelemetryService, DeviceTelemetryService>();
-builder.Services.AddScoped<IDeviceImageService, DeviceImageService>();
+builder.Services.AddScoped<IDeviceImageDataService, DeviceImageDataService>();
 
 var app = builder.Build();
 
