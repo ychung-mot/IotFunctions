@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
@@ -18,7 +19,6 @@ namespace IotFuncs
         [FunctionName("ResizeAndAddWatermark")]
         public static async Task Run(
             [BlobTrigger("images-src/{name}")] BlobClient srcClient,
-            [Blob("images/{name}", FileAccess.Write)] Stream destination,
             string name,
             ILogger log)
         {
@@ -35,7 +35,16 @@ namespace IotFuncs
             input.Mutate(x => x.ApplyWaterMark(lastModified, font, Color.White, Position.Top));
             input.Mutate(x => x.ApplyWaterMark(text, font, Color.White, Position.Bottom));
 
-            await input.SaveAsync(destination, format);
+            var connString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
+            var client = new BlobServiceClient(connString);
+            var container = client.GetBlobContainerClient("$web");
+            var blobClient = container.GetBlobClient(name);
+
+            var stream = new MemoryStream();
+            await input.SaveAsync(stream, format);
+            stream.Position = 0;
+
+            await blobClient.UploadAsync(stream);
 
             log.LogInformation($"{name} has been processed.");
         }
