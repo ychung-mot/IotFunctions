@@ -3,6 +3,7 @@ using IotApis.Service;
 using IotCommon;
 using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
+using IotApis.HttpClients;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,7 @@ builder.Services.AddDbContextFactory<CameraContext>(optionsBuilder =>
 
 builder.Services.AddScoped<IDeviceTelemetryService, DeviceTelemetryService>();
 builder.Services.AddScoped<IDeviceImageDataService, DeviceImageDataService>();
+builder.Services.AddHttpClients(builder.Configuration);
 
 var app = builder.Build();
 
