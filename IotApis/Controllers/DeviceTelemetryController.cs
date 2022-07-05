@@ -41,8 +41,8 @@ namespace IotApis.Controllers
             if (!ValidateDate(dateFrom) || !ValidateDate(dateTo))
                 return BadRequest();
 
-            var dateFromTs = DateUtils.ConvertPacificToUtcTime(DateTime.Parse(dateFrom)).ToString("o", CultureInfo.InvariantCulture);
-            var dateToTs = DateUtils.ConvertPacificToUtcTime(DateTime.Parse(dateTo).AddDays(1).AddSeconds(-1)).ToString("o", CultureInfo.InvariantCulture);
+            var dateFromTs = DateTime.Parse(dateFrom).ToString("o", CultureInfo.InvariantCulture);
+            var dateToTs = DateTime.Parse(dateTo).AddDays(1).AddSeconds(-1).ToString("o", CultureInfo.InvariantCulture);
 
             var content = await _iotCentralApi.GetWeatherTelemetry(deviceId, dateFromTs, dateToTs);
 

@@ -1,7 +1,9 @@
-﻿using IotApis.Model;
+﻿using IotApis.HttpClients;
+using IotApis.Model;
 using IotApis.Service;
 using IotCommon;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace IotApis.Controllers
@@ -11,11 +13,13 @@ namespace IotApis.Controllers
     public class DeviceImageDataController : ControllerBase
     {
         private readonly IDeviceImageDataService _deviceImageService;
+        private readonly IIotCentralApi _iotCentralApi;
         private readonly ILogger<DeviceImageDataController> _logger;
 
-        public DeviceImageDataController(IDeviceImageDataService deviceImageService, ILogger<DeviceImageDataController> logger)
+        public DeviceImageDataController(IDeviceImageDataService deviceImageService, IIotCentralApi iotCentralApi, ILogger<DeviceImageDataController> logger)
         {
             _deviceImageService = deviceImageService;
+            _iotCentralApi = iotCentralApi;
             _logger = logger;
         }
 
@@ -29,6 +33,23 @@ namespace IotApis.Controllers
             var dateToTs = DateUtils.ConvertPacificToUtcTotalMilliseconds(DateTime.Parse(dateTo).AddDays(1).AddSeconds(-1));
 
             return await _deviceImageService.GetDeviceImageData(deviceId, dateFromTs, dateToTs, preset);
+        }
+
+        [HttpGet("iotcentral/{deviceId}/imagedata", Name = "GetIotCentralDeviceImageData")]
+        public async Task<ActionResult> GetIotCentralDeviceImageData(string deviceId, string dateFrom, string dateTo)
+        {
+            if (!ValidateDate(dateFrom) || !ValidateDate(dateTo))
+                return BadRequest();
+
+            var dateFromTs = DateTime.Parse(dateFrom).ToString("o", CultureInfo.InvariantCulture);
+            var dateToTs = DateTime.Parse(dateTo).AddDays(1).AddSeconds(-1).ToString("o", CultureInfo.InvariantCulture);
+
+            var content = await _iotCentralApi.GetCameraTelemetry(deviceId, dateFromTs, dateToTs);
+
+            var response = Ok(await content.ReadAsStreamAsync());
+            response.ContentTypes.Add("application/json; charset=utf-8");
+
+            return response;
         }
 
         private bool ValidateDate(string dateStr)
