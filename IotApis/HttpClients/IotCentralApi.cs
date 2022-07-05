@@ -24,7 +24,7 @@
         {
             var path = _config.GetValue<string>("IotCentral:TelemetryPath") ?? "";
 
-            var query = "SELECT $id, $ts, deviceId, measurements FROM dtmi:modelDefinition:h9cornd8k:segb9agyn3" +
+            var query = "SELECT $id, $ts, measurements FROM dtmi:modelDefinition:h9cornd8k:segb9agyn3" +
                 $" WHERE $ts >= '{dateFrom}' AND $ts <= '{dateTo}' AND $id = '{deviceId}'";
 
             var body = $"{{ \"query\": \"{query}\" }}";
