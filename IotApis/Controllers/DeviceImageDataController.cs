@@ -51,6 +51,16 @@ namespace IotApis.Controllers
 
             return response;
         }
+        [HttpGet("iotcentral/{deviceId}/property")]
+        public async Task<ActionResult> GetIotCentralDeviceProperty(string deviceId)
+        {
+            var content = await _iotCentralApi.GetDeviceProperty(deviceId);
+
+            var response = Ok(await content.ReadAsStreamAsync());
+            response.ContentTypes.Add("application/json; charset=utf-8");
+
+            return response;
+        }
 
         private bool ValidateDate(string dateStr)
         {

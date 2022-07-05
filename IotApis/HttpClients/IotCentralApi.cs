@@ -4,6 +4,7 @@
     {
         Task<HttpContent> GetWeatherTelemetry(string deviceId, string dateFrom, string dateTo);
         Task<HttpContent> GetCameraTelemetry(string deviceId, string dateFrom, string dateTo);
+        Task<HttpContent> GetDeviceProperty(string deviceId);
     }
     public class IotCentralApi : IIotCentralApi
     {
@@ -44,6 +45,15 @@
             var body = $"{{ \"query\": \"{query}\" }}";
 
             var response = await _api.Post(_client, path, body);
+
+            return response.Content;
+        }
+
+        public async Task<HttpContent> GetDeviceProperty(string deviceId)
+        {
+            var path = string.Format(_config.GetValue<string>("IotCentral:PropertyPath") ?? "", deviceId);
+            
+            var response = await _api.Get(_client, path);
 
             return response.Content;
         }
