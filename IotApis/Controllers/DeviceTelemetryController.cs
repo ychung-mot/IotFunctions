@@ -4,7 +4,6 @@ using IotApis.Service;
 using IotCommon;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
-using System.Net;
 using System.Text.RegularExpressions;
 
 namespace IotApis.Controllers
@@ -47,7 +46,10 @@ namespace IotApis.Controllers
 
             var content = await _iotCentralApi.GetWeatherTelemetry(deviceId, dateFromTs, dateToTs);
 
-            return Ok(await content.ReadAsStreamAsync());
+            var response = Ok(await content.ReadAsStreamAsync());
+            response.ContentTypes.Add("application/json; charset=utf-8");
+
+            return response;
         }
 
         private bool ValidateDate(string dateStr)
