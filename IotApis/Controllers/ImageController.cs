@@ -6,7 +6,7 @@ namespace IotApis.Controllers
 {
     [ApiController]
     [Route("api/images")]
-    public class ImageController : ControllerBase
+    public class ImageController : IotControllerBase
     {
         private IConfiguration _config;
 
