@@ -44,29 +44,35 @@ namespace IotApis.Controllers
             var dateFromTs = DateTime.Parse(dateFrom).ToString("o", CultureInfo.InvariantCulture);
             var dateToTs = DateTime.Parse(dateTo).AddDays(1).AddSeconds(-1).ToString("o", CultureInfo.InvariantCulture);
 
-            var content = await _iotCentralApi.GetWeatherTelemetry(deviceId, dateFromTs, dateToTs);
+            var responseMessage = await _iotCentralApi.GetWeatherTelemetry(deviceId, dateFromTs, dateToTs);
 
-            var response = Ok(await content.ReadAsStreamAsync());
-            response.ContentTypes.Add("application/json; charset=utf-8");
-
-            return response;
+            return await HandleResponseMessage(responseMessage);
         }
 
         [HttpGet("iotcentral/{deviceId}/property")]
         public async Task<ActionResult> GetIotCentralDeviceProperty(string deviceId)
         {
-            var content = await _iotCentralApi.GetDeviceProperty(deviceId);
+            var responseMessage = await _iotCentralApi.GetDeviceProperty(deviceId);
 
-            var response = Ok(await content.ReadAsStreamAsync());
-            response.ContentTypes.Add("application/json; charset=utf-8");
-
-            return response;
+            return await HandleResponseMessage(responseMessage);
         }
         private bool ValidateDate(string dateStr)
         {
             var regex = new Regex(@"\d\d\d\d-\d\d-\d\d");
 
             return regex.Match(dateStr).Success;
+        }
+
+        private async Task<ActionResult> HandleResponseMessage(HttpResponseMessage responseMessage)
+        {
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var response = Ok(await responseMessage.Content.ReadAsStreamAsync());
+                response.ContentTypes.Add("application/json; charset=utf-8");
+                return response;
+            }
+
+            return StatusCode(((int)responseMessage.StatusCode), responseMessage.Content);
         }
     }
 }
