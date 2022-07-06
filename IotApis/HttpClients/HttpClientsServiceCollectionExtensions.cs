@@ -13,8 +13,6 @@ namespace IotApis.HttpClients
                 client.DefaultRequestHeaders.Clear();
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("SharedAccessSignature", config.GetValue<string>("IotCentral:Sas"));
             });
-
-            services.AddScoped<IApi, Api>();
         }
 
         private static TimeSpan GetTimeout(IConfiguration config, string section)

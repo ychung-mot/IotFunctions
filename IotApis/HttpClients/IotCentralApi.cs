@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Net;
+using System.Text;
 
 namespace IotApis.HttpClients
 {
@@ -12,14 +13,12 @@ namespace IotApis.HttpClients
     public class IotCentralApi : IIotCentralApi
     {
         private HttpClient _client;
-        private IApi _api;
         private IConfiguration _config;
         private ILogger<IotCentralApi> _logger;
 
-        public IotCentralApi(HttpClient client, IApi api, IConfiguration config, ILogger<IotCentralApi> logger)
+        public IotCentralApi(HttpClient client, IConfiguration config, ILogger<IotCentralApi> logger)
         {
             _client = client;
-            _api = api;
             _config = config;
             _logger = logger;
         }
@@ -38,7 +37,7 @@ namespace IotApis.HttpClients
 
             var body = $"{{ \"query\": \"{query}\" }}";
 
-            return await _api.Post(_client, path, body);
+            return await _client.PostAsync(path, new StringContent(body, Encoding.UTF8, "application/json"));
         }
 
         public async Task<HttpResponseMessage> GetCameraTelemetry(string deviceId, string dateFrom, string dateTo)
@@ -55,21 +54,21 @@ namespace IotApis.HttpClients
 
             var body = $"{{ \"query\": \"{query}\" }}";
 
-            return await _api.Post(_client, path, body);
+            return await _client.PostAsync(path, new StringContent(body, Encoding.UTF8, "application/json"));
         }
 
         public async Task<HttpResponseMessage> GetDeviceProperty(string deviceId)
         {
             var path = string.Format(_config.GetValue<string>("IotCentral:PropertyPath") ?? "", deviceId);
             
-            return await _api.Get(_client, path);
+            return await _client.GetAsync(path);
         }
 
         public async Task<string> GetTemplate(string deviceId)
         {
             var path = string.Format(_config.GetValue<string>("IotCentral:DevicePath") ?? "", deviceId);
 
-            var responseMessage = await _api.Get(_client, path);
+            var responseMessage = await _client.GetAsync(path);
 
             if (responseMessage.IsSuccessStatusCode)
             {
