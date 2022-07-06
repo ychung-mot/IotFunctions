@@ -73,7 +73,8 @@ namespace IotApis.Controllers
                 return response;
             }
 
-            return StatusCode(((int)responseMessage.StatusCode), responseMessage.Content);
+            var content = await responseMessage.Content.ReadAsStringAsync();
+            return StatusCode(((int)responseMessage.StatusCode), content);
         }
     }
 }
