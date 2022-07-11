@@ -11,7 +11,7 @@ namespace IotApis.HttpClients
                 client.BaseAddress = new Uri(config.GetValue<string>("IotCentral:Url"));
                 client.Timeout = GetTimeout(config, "IotCentral:Timeout");
                 client.DefaultRequestHeaders.Clear();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("SharedAccessSignature", config.GetValue<string>("IotCentral:Sas"));
+                //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("SharedAccessSignature", config.GetValue<string>("IotCentral:Sas"));
             });
         }
 

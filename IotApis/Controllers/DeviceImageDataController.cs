@@ -36,7 +36,7 @@ namespace IotApis.Controllers
         }
 
         [HttpGet("iotcentral/{deviceId}/imagedata", Name = "GetIotCentralDeviceImageData")]
-        public async Task<ActionResult> GetIotCentralDeviceImageData(string deviceId, string dateFrom, string dateTo)
+        public async Task<ActionResult> GetIotCentralDeviceImageData(string deviceId, string dateFrom, string dateTo, [FromHeader] string authorization)
         {
             if (!ValidateDate(dateFrom) || !ValidateDate(dateTo))
                 return BadRequest();
@@ -44,15 +44,15 @@ namespace IotApis.Controllers
             var dateFromTs = DateTime.Parse(dateFrom).ToString("o", CultureInfo.InvariantCulture);
             var dateToTs = DateTime.Parse(dateTo).AddDays(1).AddSeconds(-1).ToString("o", CultureInfo.InvariantCulture);
 
-            var responseMessage = await _iotCentralApi.GetCameraTelemetry(deviceId, dateFromTs, dateToTs);
+            var responseMessage = await _iotCentralApi.GetCameraTelemetry(deviceId, dateFromTs, dateToTs, authorization);
 
             return await HandleResponseMessage(responseMessage);
         }
 
         [HttpGet("iotcentral/{deviceId}/property")]
-        public async Task<ActionResult> GetIotCentralDeviceProperty(string deviceId)
+        public async Task<ActionResult> GetIotCentralDeviceProperty(string deviceId, [FromHeader] string authorization)
         {
-            var responseMessage = await _iotCentralApi.GetDeviceProperty(deviceId);
+            var responseMessage = await _iotCentralApi.GetDeviceProperty(deviceId, authorization);
 
             return await HandleResponseMessage(responseMessage);
         }

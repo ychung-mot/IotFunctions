@@ -1,14 +1,15 @@
 ﻿using Newtonsoft.Json;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace IotApis.HttpClients
 {
     public interface IIotCentralApi
     {
-        Task<HttpResponseMessage> GetWeatherTelemetry(string deviceId, string dateFrom, string dateTo);
-        Task<HttpResponseMessage> GetCameraTelemetry(string deviceId, string dateFrom, string dateTo);
-        Task<HttpResponseMessage> GetDeviceProperty(string deviceId);
+        Task<HttpResponseMessage> GetWeatherTelemetry(string deviceId, string dateFrom, string dateTo, string authorization);
+        Task<HttpResponseMessage> GetCameraTelemetry(string deviceId, string dateFrom, string dateTo, string authorization);
+        Task<HttpResponseMessage> GetDeviceProperty(string deviceId, string authorization);
     }
     public class IotCentralApi : IIotCentralApi
     {
@@ -23,9 +24,10 @@ namespace IotApis.HttpClients
             _logger = logger;
         }
 
-        public async Task<HttpResponseMessage> GetWeatherTelemetry(string deviceId, string dateFrom, string dateTo)
+        public async Task<HttpResponseMessage> GetWeatherTelemetry(string deviceId, string dateFrom, string dateTo, string authorization)
         {
-            var template = await GetTemplate(deviceId);
+
+            var template = await GetTemplate(deviceId, authorization);
 
             if (template == "")
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
@@ -37,12 +39,13 @@ namespace IotApis.HttpClients
 
             var body = $"{{ \"query\": \"{query}\" }}";
 
+            _client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(authorization);
             return await _client.PostAsync(path, new StringContent(body, Encoding.UTF8, "application/json"));
         }
 
-        public async Task<HttpResponseMessage> GetCameraTelemetry(string deviceId, string dateFrom, string dateTo)
+        public async Task<HttpResponseMessage> GetCameraTelemetry(string deviceId, string dateFrom, string dateTo, string authorization)
         {
-            var template = await GetTemplate(deviceId);
+            var template = await GetTemplate(deviceId, authorization);
 
             if (template == "")
                 return new HttpResponseMessage(HttpStatusCode.NotFound);
@@ -54,20 +57,23 @@ namespace IotApis.HttpClients
 
             var body = $"{{ \"query\": \"{query}\" }}";
 
+            _client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(authorization);
             return await _client.PostAsync(path, new StringContent(body, Encoding.UTF8, "application/json"));
         }
 
-        public async Task<HttpResponseMessage> GetDeviceProperty(string deviceId)
+        public async Task<HttpResponseMessage> GetDeviceProperty(string deviceId, string authorization)
         {
             var path = string.Format(_config.GetValue<string>("IotCentral:PropertyPath") ?? "", deviceId);
-            
+
+            _client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(authorization);
             return await _client.GetAsync(path);
         }
 
-        public async Task<string> GetTemplate(string deviceId)
+        public async Task<string> GetTemplate(string deviceId, string authorization)
         {
             var path = string.Format(_config.GetValue<string>("IotCentral:DevicePath") ?? "", deviceId);
 
+            _client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(authorization);
             var responseMessage = await _client.GetAsync(path);
 
             if (responseMessage.IsSuccessStatusCode)
