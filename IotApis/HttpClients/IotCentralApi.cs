@@ -8,6 +8,7 @@ namespace IotApis.HttpClients
     public interface IIotCentralApi
     {
         Task<HttpResponseMessage> GetWeatherTelemetry(string deviceId, string dateFrom, string dateTo, string authorization);
+        Task<HttpResponseMessage> GeLatesttWeatherTelemetry(string deviceId, string authorization);
         Task<HttpResponseMessage> GetCameraTelemetry(string deviceId, string dateFrom, string dateTo, string authorization);
         Task<HttpResponseMessage> GetDeviceProperty(string deviceId, string authorization);
     }
@@ -36,6 +37,24 @@ namespace IotApis.HttpClients
 
             var query = $"SELECT $id, $ts, measurements FROM {template}" +
                 $" WHERE $ts >= '{dateFrom}' AND $ts <= '{dateTo}' AND $id = '{deviceId}'";
+
+            var body = $"{{ \"query\": \"{query}\" }}";
+
+            _client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(authorization);
+            return await _client.PostAsync(path, new StringContent(body, Encoding.UTF8, "application/json"));
+        }
+
+        public async Task<HttpResponseMessage> GeLatesttWeatherTelemetry(string deviceId, string authorization)
+        {
+            var template = await GetTemplate(deviceId, authorization);
+
+            if (template == "")
+                return new HttpResponseMessage(HttpStatusCode.NotFound);
+
+            var path = _config.GetValue<string>("IotCentral:TelemetryPath") ?? "";
+
+            var query = $"SELECT measurements FROM {template}" +
+                $" WHERE WITHIN_WINDOW(P5D) AND $id = '{deviceId}'";
 
             var body = $"{{ \"query\": \"{query}\" }}";
 

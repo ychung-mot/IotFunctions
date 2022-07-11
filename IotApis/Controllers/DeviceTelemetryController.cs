@@ -49,6 +49,14 @@ namespace IotApis.Controllers
             return await HandleResponseMessage(responseMessage);
         }
 
+        [HttpGet("iotcentral/{deviceId}/telemetries/latest", Name = "GetIotCentralDeviceLatestTelemetries")]
+        public async Task<ActionResult> GetIotCentralDeviceLatestTelemetries(string deviceId, [FromHeader] string authorization)
+        {
+            var responseMessage = await _iotCentralApi.GeLatesttWeatherTelemetry(deviceId, authorization);
+
+            return await HandleResponseMessage(responseMessage);
+        }
+
         [HttpGet("iotcentral/{deviceId}/property")]
         public async Task<ActionResult> GetIotCentralDeviceProperty(string deviceId, [FromHeader] string authorization)
         {
