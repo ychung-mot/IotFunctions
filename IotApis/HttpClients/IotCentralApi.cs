@@ -10,6 +10,7 @@ namespace IotApis.HttpClients
         Task<HttpResponseMessage> GetWeatherTelemetry(string deviceId, string dateFrom, string dateTo, string authorization);
         Task<HttpResponseMessage> GeLatesttWeatherTelemetry(string deviceId, string authorization);
         Task<HttpResponseMessage> GetCameraTelemetry(string deviceId, string dateFrom, string dateTo, string authorization);
+        Task<HttpResponseMessage> GetCameraLatestTelemetry(string deviceId, string authorization);
         Task<HttpResponseMessage> GetDeviceProperty(string deviceId, string authorization);
     }
     public class IotCentralApi : IIotCentralApi
@@ -73,6 +74,22 @@ namespace IotApis.HttpClients
 
             var query = $"SELECT $id, $ts, CameraDatas FROM {template}" +
                 $" WHERE $ts >= '{dateFrom}' AND $ts <= '{dateTo}' AND $id = '{deviceId}'";
+
+            var body = $"{{ \"query\": \"{query}\" }}";
+
+            _client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(authorization);
+            return await _client.PostAsync(path, new StringContent(body, Encoding.UTF8, "application/json"));
+        }
+        public async Task<HttpResponseMessage> GetCameraLatestTelemetry(string deviceId, string authorization)
+        {
+            var template = await GetTemplate(deviceId, authorization);
+
+            if (template == "")
+                return new HttpResponseMessage(HttpStatusCode.NotFound);
+
+            var path = _config.GetValue<string>("IotCentral:TelemetryPath") ?? "";
+
+            var query = $"SELECT TOP 1 CameraDatas FROM {template} WHERE $id = '{deviceId}' ORDER BY $ts DESC";
 
             var body = $"{{ \"query\": \"{query}\" }}";
 

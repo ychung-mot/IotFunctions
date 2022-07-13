@@ -31,7 +31,6 @@ namespace IotApis.Service
             {
                 image.SnapshotDate = DateUtils.ConvertUtcTotalMillisecondsToPst(image.TimeStamp).ToString("yyyy-MM-dd hh:mm:ss");
             }
-
             return images;
         }
     }

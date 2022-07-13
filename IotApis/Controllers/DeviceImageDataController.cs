@@ -1,9 +1,13 @@
-﻿using IotApis.HttpClients;
+﻿using Azure.Storage.Blobs;
+using IotApis.HttpClients;
 using IotApis.Model;
 using IotApis.Service;
 using IotCommon;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Globalization;
+using System.IO.Compression;
+using System.Net.Mime;
 using System.Text.RegularExpressions;
 
 namespace IotApis.Controllers
@@ -14,12 +18,14 @@ namespace IotApis.Controllers
     {
         private readonly IDeviceImageDataService _deviceImageService;
         private readonly IIotCentralApi _iotCentralApi;
+        private readonly IConfiguration _config;
         private readonly ILogger<DeviceImageDataController> _logger;
 
-        public DeviceImageDataController(IDeviceImageDataService deviceImageService, IIotCentralApi iotCentralApi, ILogger<DeviceImageDataController> logger)
+        public DeviceImageDataController(IDeviceImageDataService deviceImageService, IIotCentralApi iotCentralApi, IConfiguration config, ILogger<DeviceImageDataController> logger)
         {
             _deviceImageService = deviceImageService;
             _iotCentralApi = iotCentralApi;
+            _config = config;
             _logger = logger;
         }
 
@@ -48,6 +54,58 @@ namespace IotApis.Controllers
 
             return await HandleResponseMessage(responseMessage);
         }
+
+        [HttpGet("iotcentral/{deviceId}/imagedata/latest", Name = "GetLatestIotCentralDeviceImageData")]
+        public async Task<ActionResult> GetLatestIotCentralDeviceImages(string deviceId, [FromHeader] string authorization)
+        {
+            var imageDataResponse = await _iotCentralApi.GetCameraLatestTelemetry(deviceId, authorization);
+            var imageData = JsonConvert.DeserializeObject<dynamic>(await imageDataResponse.Content.ReadAsStringAsync());
+            var results = imageData.results;
+
+            if (results.Count == 0)
+                return NotFound();
+
+            var cameraDatas = results[0].CameraDatas;
+
+            using var zipStream = new MemoryStream();
+           
+            using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Create, true)) 
+            {
+                var fileName = 0;
+
+                foreach (var cameraData in cameraDatas)
+                {
+                    using var fileStream = new MemoryStream();
+                    await GetImageStream(fileStream, cameraData.BlobUri.ToString());
+
+                    if (fileStream.Length == 0) continue;
+
+                    var zipEntry = archive.CreateEntry((fileName++).ToString() + ".jpg", CompressionLevel.Fastest);
+
+                    using var zipEntryStream = zipEntry.Open();
+                    await fileStream.CopyToAsync(zipEntryStream);
+                }
+
+                if (fileName == 0)
+                    return NotFound();
+            }
+
+            return File(zipStream.ToArray(), MediaTypeNames.Application.Zip, "images.zip");
+        }
+
+        private async Task GetImageStream(MemoryStream fileStream, string imagePath)
+        {
+            var connString = _config.GetConnectionString(Constants.BlobConnString);
+
+            var client = new BlobServiceClient(connString);
+
+            var container = client.GetBlobContainerClient("images-src");
+            var blobClient = container.GetBlobClient(imagePath);
+
+            await blobClient.DownloadToAsync(fileStream);
+            fileStream.Position = 0;
+        }
+
 
         [HttpGet("iotcentral/{deviceId}/property")]
         public async Task<ActionResult> GetIotCentralDeviceProperty(string deviceId, [FromHeader] string authorization)
