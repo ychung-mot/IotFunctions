@@ -71,22 +71,21 @@ namespace IotApis.Controllers
 
             using var archive = new ZipArchive(zipStream, ZipArchiveMode.Create, true);
 
-            var fileName = 0;
-
             foreach (var cameraData in cameraDatas)
             {
                 using var fileStream = new MemoryStream();
-                await GetImageStream(fileStream, cameraData.BlobUri.ToString());
+                var imagePath = cameraData.BlobUri.ToString();
+                await GetImageStream(fileStream, imagePath);
 
                 if (fileStream.Length == 0) continue;
 
-                var zipEntry = archive.CreateEntry((fileName++).ToString() + ".jpg", CompressionLevel.Fastest);
+                var zipEntry = archive.CreateEntry(GetFileName(imagePath), CompressionLevel.Fastest);
 
                 using var zipEntryStream = zipEntry.Open();
                 await fileStream.CopyToAsync(zipEntryStream);
             }
 
-            if (fileName == 0)
+            if (zipStream.Length == 0)
                 return NotFound();
 
             archive.Dispose(); //to finish up zip processing before sending it to client
@@ -100,13 +99,18 @@ namespace IotApis.Controllers
 
             var client = new BlobServiceClient(connString);
 
-            var container = client.GetBlobContainerClient("images-src");
+            var container = client.GetBlobContainerClient("$web");
             var blobClient = container.GetBlobClient(imagePath);
 
             await blobClient.DownloadToAsync(fileStream);
             fileStream.Position = 0;
         }
 
+        private static string GetFileName(string imagePath)
+        {
+            var pathArray = imagePath.Split(@"\");
+            return pathArray[2] + ".jpg";
+        }
 
         [HttpGet("iotcentral/{deviceId}/property")]
         public async Task<ActionResult> GetIotCentralDeviceProperty(string deviceId, [FromHeader] string authorization)
