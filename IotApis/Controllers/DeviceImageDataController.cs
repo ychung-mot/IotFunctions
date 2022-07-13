@@ -68,27 +68,28 @@ namespace IotApis.Controllers
             var cameraDatas = results[0].CameraDatas;
 
             using var zipStream = new MemoryStream();
-           
-            using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Create, true)) 
+
+            using var archive = new ZipArchive(zipStream, ZipArchiveMode.Create, true);
+
+            var fileName = 0;
+
+            foreach (var cameraData in cameraDatas)
             {
-                var fileName = 0;
+                using var fileStream = new MemoryStream();
+                await GetImageStream(fileStream, cameraData.BlobUri.ToString());
 
-                foreach (var cameraData in cameraDatas)
-                {
-                    using var fileStream = new MemoryStream();
-                    await GetImageStream(fileStream, cameraData.BlobUri.ToString());
+                if (fileStream.Length == 0) continue;
 
-                    if (fileStream.Length == 0) continue;
+                var zipEntry = archive.CreateEntry((fileName++).ToString() + ".jpg", CompressionLevel.Fastest);
 
-                    var zipEntry = archive.CreateEntry((fileName++).ToString() + ".jpg", CompressionLevel.Fastest);
-
-                    using var zipEntryStream = zipEntry.Open();
-                    await fileStream.CopyToAsync(zipEntryStream);
-                }
-
-                if (fileName == 0)
-                    return NotFound();
+                using var zipEntryStream = zipEntry.Open();
+                await fileStream.CopyToAsync(zipEntryStream);
             }
+
+            if (fileName == 0)
+                return NotFound();
+
+            archive.Dispose(); //to finish up zip processing before sending it to client
 
             return File(zipStream.ToArray(), MediaTypeNames.Application.Zip, "images.zip");
         }
