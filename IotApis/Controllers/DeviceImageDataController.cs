@@ -55,7 +55,7 @@ namespace IotApis.Controllers
             return await HandleResponseMessage(responseMessage);
         }
 
-        [HttpGet("iotcentral/{deviceId}/imagedata/latest", Name = "GetLatestIotCentralDeviceImageData")]
+        [HttpGet("iotcentral/{deviceId}/images/latest", Name = "GetLatestIotCentralDeviceImageData")]
         public async Task<ActionResult> GetLatestIotCentralDeviceImages(string deviceId, [FromHeader] string authorization)
         {
             var imageDataResponse = await _iotCentralApi.GetCameraLatestTelemetry(deviceId, authorization);
