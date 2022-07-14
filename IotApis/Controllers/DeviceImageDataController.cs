@@ -102,6 +102,8 @@ namespace IotApis.Controllers
             var container = client.GetBlobContainerClient("$web");
             var blobClient = container.GetBlobClient(imagePath);
 
+            if (!blobClient.Exists()) return;
+
             await blobClient.DownloadToAsync(fileStream);
             fileStream.Position = 0;
         }
