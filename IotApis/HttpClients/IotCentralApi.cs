@@ -54,8 +54,8 @@ namespace IotApis.HttpClients
 
             var path = _config.GetValue<string>("IotCentral:TelemetryPath") ?? "";
 
-            var query = $"SELECT measurements FROM {template}" +
-                $" WHERE WITHIN_WINDOW(P5D) AND $id = '{deviceId}'";
+            var query = $"SELECT TOP 10 measurements FROM {template}" +
+                $" WHERE $id = '{deviceId}' ORDER BY $ts DESC ";
 
             var body = $"{{ \"query\": \"{query}\" }}";
 
