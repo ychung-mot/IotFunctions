@@ -89,7 +89,7 @@ namespace IotApis.HttpClients
 
             var path = _config.GetValue<string>("IotCentral:TelemetryPath") ?? "";
 
-            var query = $"SELECT TOP 1 CameraDatas FROM {template} WHERE $id = '{deviceId}' ORDER BY $ts DESC";
+            var query = $"SELECT TOP 1 CameraDatas, $ts as timestamp FROM {template} WHERE $id = '{deviceId}' ORDER BY $ts DESC";
 
             var body = $"{{ \"query\": \"{query}\" }}";
 

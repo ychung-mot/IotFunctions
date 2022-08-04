@@ -55,7 +55,7 @@ namespace IotApis.Controllers
             return await HandleResponseMessage(responseMessage);
         }
 
-        [HttpGet("iotcentral/{deviceId}/images/latest", Name = "GetLatestIotCentralDeviceImageData")]
+        [HttpGet("iotcentral/{deviceId}/images/latest", Name = "GetLatestIotCentralDeviceImages")]
         public async Task<ActionResult> GetLatestIotCentralDeviceImages(string deviceId, [FromHeader] string authorization)
         {
             var imageDataResponse = await _iotCentralApi.GetCameraLatestTelemetry(deviceId, authorization);
@@ -91,6 +91,13 @@ namespace IotApis.Controllers
             archive.Dispose(); //to finish up zip processing before sending it to client
 
             return File(zipStream.ToArray(), MediaTypeNames.Application.Zip, "images.zip");
+        }
+
+        [HttpGet("iotcentral/{deviceId}/telemetry/latest", Name = "GetLatestIotCentralDeviceTelemetry")]
+        public async Task<ActionResult> GetLatestIotCentralDeviceTelemetry(string deviceId, [FromHeader] string authorization)
+        {
+            var responseMessage = await _iotCentralApi.GetCameraLatestTelemetry(deviceId, authorization);
+            return await HandleResponseMessage(responseMessage);
         }
 
         private async Task GetImageStream(MemoryStream fileStream, string imagePath)
